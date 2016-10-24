@@ -9,9 +9,11 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.danil.skilder.MainActivity">
-    <com.example.danil.skilder.DrawView
-        android:layout_width="match_parent"
+    <FrameLayout
         android:layout_height="match_parent"
-        android:id="@+id/draw_zone"/>
+        android:layout_width="match_parent"
+        android:id="@+id/fragment_container">
+
+    </FrameLayout>
 
 </LinearLayout>
