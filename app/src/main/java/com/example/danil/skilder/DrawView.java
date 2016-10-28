@@ -15,9 +15,7 @@ import android.view.View;
  */
 class DrawView extends View{
 
-    public enum DrawTools {PEN};
-
-    private DrawTools tool = DrawTools.PEN;
+    private AbstractDrawTool tool;
     private final Paint paint = new Paint();
     private Path path = new Path();
     {
@@ -40,8 +38,15 @@ class DrawView extends View{
     public void setLineSize(float size){
         paint.setStrokeWidth(size);
     }
-    public void setDrawTool (DrawTools tool){
+    public void setTool(AbstractDrawTool tool){
         this.tool = tool;
+    }
+
+    private void actualizeTool(){
+        if(tool != null){
+            paint.setColor(tool.getColor());
+            paint.setStrokeWidth(tool.getWidth());
+        }
     }
 
     @Override
@@ -55,6 +60,9 @@ class DrawView extends View{
         switch (MotionEventCompat.getActionMasked(event)) {
 
             case MotionEvent.ACTION_DOWN:
+                if(tool != null) {
+                    actualizeTool();
+                }
                 path.moveTo(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:

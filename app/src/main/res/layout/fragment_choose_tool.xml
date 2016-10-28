@@ -1,0 +1,65 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.danil.skilder.ChooseToolFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="@string/red_component"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content" />
+        <SeekBar
+            android:layout_width="288dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/red"
+            android:layout_gravity="center"
+            android:indeterminate="false" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="@string/green_component"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content" />
+        <SeekBar
+            android:layout_width="288dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/green"
+            android:layout_gravity="center"
+            android:indeterminate="false" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="@string/blue_component"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content" />
+        <SeekBar
+            android:layout_width="288dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/blue"
+            android:layout_gravity="center"
+            android:indeterminate="false" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="@string/brush_width"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content" />
+        <SeekBar
+            android:layout_width="288dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/width"
+            android:layout_gravity="center"
+            android:indeterminate="false" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="OK"
+            android:id="@+id/set_draw_tool"/>
+    </LinearLayout>
+
+</FrameLayout>
