@@ -10,18 +10,13 @@ import android.widget.Button;
 
 
 
-public class DrawFragment extends Fragment {
+public class DrawFragment extends BaseFragment {
 
-    // TODO: Rename and change types of parameters
-    private OnFragmentInteractionListener mListener;
 
+    private final static String SELECT_TOOL = "SELECT_TOOL";
     public DrawFragment() {
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,34 +31,12 @@ public class DrawFragment extends Fragment {
         changeDrawStatusButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onFragmentInteraction();
+                onFragmentInteraction(SELECT_TOOL, null);
             }
         });
         DrawView drawView = (DrawView) getView().findViewById(R.id.draw_zone);
         drawView.setTool(DrawTool.getInstance());
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction();
-    }
 }

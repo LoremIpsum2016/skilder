@@ -1,27 +1,19 @@
 package com.example.danil.skilder;
 
-import android.content.Context;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
 
 
-public class ChooseToolFragment extends Fragment {
+public class ChooseToolFragment extends BaseFragment {
 
-    private OnFragmentInteractionListener mListener;
+    private final static String BACK_TO_MAIN ="BACK_TO_MAIN";
 
     public ChooseToolFragment() {
-    }
-
-    public static ChooseToolFragment newInstance(String param1, String param2) {
-        ChooseToolFragment fragment = new ChooseToolFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -36,42 +28,38 @@ public class ChooseToolFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        SeekBar blueBar  = (SeekBar) getView().findViewById(R.id.blue);
+
         SeekBar redBar   = (SeekBar) getView().findViewById(R.id.red);
         SeekBar greenBar = (SeekBar) getView().findViewById(R.id.green);
+        SeekBar blueBar  = (SeekBar) getView().findViewById(R.id.blue);
         SeekBar widthBar = (SeekBar) getView().findViewById(R.id.width);
+
+        redBar.setMax(DrawTool.MAX_COLOR_VALUE);
+        greenBar.setMax(DrawTool.MAX_COLOR_VALUE);
+        blueBar.setMax(DrawTool.MAX_COLOR_VALUE);
+        widthBar.setMax(DrawTool.MAX_BRUSH_SIZE);
+
+        DrawTool tool = DrawTool.getInstance();
+
+        redBar.setProgress(tool.getParam(DrawTool.AllowedParams.RED));
+        greenBar.setProgress(tool.getParam(DrawTool.AllowedParams.GREEN));
+        blueBar.setProgress(tool.getParam(DrawTool.AllowedParams.BLUE));
+        widthBar.setProgress(tool.getParam(DrawTool.AllowedParams.WIDTH));
 
         blueBar.setOnSeekBarChangeListener(getListener(DrawTool.AllowedParams.BLUE));
         redBar.setOnSeekBarChangeListener(getListener(DrawTool.AllowedParams.RED));
         greenBar.setOnSeekBarChangeListener(getListener(DrawTool.AllowedParams.GREEN));
         widthBar.setOnSeekBarChangeListener(getListener(DrawTool.AllowedParams.WIDTH));
 
-//        Button button = (Button) getView().findViewById(R.id.set_draw_tool);
-//        button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mListener.onFragmentInteraction();
-//            }
-//        });
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+        Button button = (Button) getView().findViewById(R.id.set_draw_tool);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onFragmentInteraction(BACK_TO_MAIN, null);
+            }
+        });
     }
 
     private SeekBar.OnSeekBarChangeListener getListener(final DrawTool.AllowedParams param){
@@ -86,7 +74,5 @@ public class ChooseToolFragment extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         };
     }
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction();
-    }
+
 }

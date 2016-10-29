@@ -8,6 +8,8 @@ import android.graphics.Color;
 public class DrawTool implements AbstractDrawTool {
     private int width;
     private int color;
+    public static int MAX_COLOR_VALUE = 255;
+    public static int MAX_BRUSH_SIZE  = 24;
     private static DrawTool tool = new DrawTool();
 
     private DrawTool(){};
@@ -32,23 +34,49 @@ public class DrawTool implements AbstractDrawTool {
     private boolean validateValue(AllowedParams key, int value){
         return true;//TODO Реализовать
     }
-    public void setParam(AllowedParams key, int percent){
-        int colorValue = 255*percent/100;
+    public void setParam(AllowedParams key, int value){
         switch (key){
             case RED:
-                this.color |= Color.rgb(colorValue,0,0);
+                this.color &= Color.argb(MAX_COLOR_VALUE,0,MAX_COLOR_VALUE,MAX_COLOR_VALUE);
+                this.color |= Color.rgb(value,0,0);
                 break;
             case GREEN:
-                this.color |= Color.rgb(0,colorValue,0);
+                this.color &= Color.argb(MAX_COLOR_VALUE,MAX_COLOR_VALUE,0,MAX_COLOR_VALUE);
+                this.color |= Color.rgb(0,value,0);
                 break;
             case BLUE:
-                this.color |= Color.rgb(0,0,colorValue);
+                this.color &= Color.argb(MAX_COLOR_VALUE,MAX_COLOR_VALUE,MAX_COLOR_VALUE,0);
+                this.color |= Color.rgb(0,0,value);
                 break;
             case WIDTH:
-                this.width = (int)((double)16/100*percent);
+                this.width = value;
         }
     }
-
+    public int getBlue(){
+        return this.color & Color.argb(0,0,0, MAX_COLOR_VALUE);
+    }
+    public int getRed(){
+        return (this.color & Color.argb(0,MAX_COLOR_VALUE,0, 0)) >> 16;
+    }
+    public int getGreen(){
+        return (this.color & Color.argb(0,0,MAX_COLOR_VALUE, 0)) >> 8;
+    }
+    public int getParam(AllowedParams key){
+        switch (key){
+            case RED:
+                return getRed();
+            case GREEN:
+                return getGreen();
+            case BLUE:
+                return getBlue();
+            case WIDTH:
+                return getWidth();
+        }
+        return 0;
+    }
+    public void reset(){
+        this.color = 0;
+    }
     public static DrawTool getInstance(){
         return tool;
     }
