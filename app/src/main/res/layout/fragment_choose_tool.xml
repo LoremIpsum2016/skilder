@@ -60,6 +60,7 @@
             android:layout_gravity="center"
             android:text="OK"
             android:id="@+id/set_draw_tool"/>
+
     </LinearLayout>
 
 </FrameLayout>

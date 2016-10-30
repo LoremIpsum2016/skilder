@@ -12,8 +12,6 @@ import android.widget.Button;
 
 public class DrawFragment extends BaseFragment {
 
-
-    private final static String SELECT_TOOL = "SELECT_TOOL";
     public DrawFragment() {
     }
 
@@ -27,13 +25,6 @@ public class DrawFragment extends BaseFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
-        Button changeDrawStatusButton = (Button) getView().findViewById(R.id.change_draw_tool);
-        changeDrawStatusButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onFragmentInteraction(SELECT_TOOL, null);
-            }
-        });
         DrawView drawView = (DrawView) getView().findViewById(R.id.draw_zone);
         drawView.setTool(DrawTool.getInstance());
         drawView.setBitmap( DrawStateManager.getInstance().getCurrentScreen());

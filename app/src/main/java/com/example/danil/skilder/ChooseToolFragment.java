@@ -11,7 +11,7 @@ import android.widget.SeekBar;
 
 public class ChooseToolFragment extends BaseFragment {
 
-    private final static String BACK_TO_MAIN ="BACK_TO_MAIN";
+    public final static String BACK_TO_MAIN ="BACK_TO_MAIN";
 
     public ChooseToolFragment() {
     }
