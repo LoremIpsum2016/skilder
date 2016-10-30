@@ -53,13 +53,13 @@ public class DrawStateManager {
         matrix.postRotate(angle);
         for (int i=0; i< bitmaps.size(); i++) {
             Bitmap oldBitmap = bitmaps.get(i);
-            Bitmap rotatedBitmap = Bitmap.createBitmap(oldBitmap ,
-                                                        0,
-                                                        0,
-                                                        oldBitmap .getWidth(),
-                                                        oldBitmap .getHeight(),
-                                                        matrix,
-            true);
+            Bitmap rotatedBitmap = Bitmap.createBitmap(oldBitmap,
+                    0,
+                    0,
+                    oldBitmap.getWidth(),
+                    oldBitmap.getHeight(),
+                    matrix,
+                    true);
             bitmaps.set(i, rotatedBitmap);
         }
     }

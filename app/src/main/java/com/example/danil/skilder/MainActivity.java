@@ -16,6 +16,9 @@ import android.view.Display;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Logger;
+
 
 public class MainActivity extends AppCompatActivity implements BaseFragment.OnFragmentInteractionListener {
 
@@ -31,21 +34,12 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
         int width = size.x;
         int height = size.y;
         DrawStateManager.getInstance().setDimensions(width,height);
+        GoogleAnalytics.getInstance(this).getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         initActivity();
-        Toolbar mToolbar_bottom = (Toolbar)findViewById(R.id.toolbar_bottom);
-        mToolbar_bottom.inflateMenu(R.menu.menu);
-        mToolbar_bottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                onToolBarInteraction(item.getItemId());
-                return false;
-            }
-        });
-
 
 
 
@@ -57,6 +51,15 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(R.id.fragment_container, new DrawFragment());
         transaction.commit();
+        Toolbar mToolbar_bottom = (Toolbar)findViewById(R.id.toolbar_bottom);
+        mToolbar_bottom.inflateMenu(R.menu.menu);
+        mToolbar_bottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                onToolBarInteraction(item.getItemId());
+                return false;
+            }
+        });
 
     }
     @Override

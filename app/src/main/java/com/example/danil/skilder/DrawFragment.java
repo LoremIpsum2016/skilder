@@ -8,13 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.android.gms.analytics.Tracker;
 
 
 public class DrawFragment extends BaseFragment {
 
+    Tracker mTracker;
     public DrawFragment() {
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -29,5 +30,6 @@ public class DrawFragment extends BaseFragment {
         drawView.setTool(DrawTool.getInstance());
         drawView.setBitmap( DrawStateManager.getInstance().getCurrentScreen());
     }
+
 
 }
