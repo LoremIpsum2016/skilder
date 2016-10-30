@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.graphics.Point;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -31,14 +32,24 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
         int width = size.x;
         int height = size.y;
         DrawStateManager.getInstance().setDimensions(width,height);
+        initActivity();
 
+
+    }
+
+    private void initActivity(){
         setContentView(R.layout.activity_main);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(R.id.fragment_container, new DrawFragment());
         transaction.commit();
 
-
+    }
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        DrawStateManager.getInstance().rotate();
+        initActivity();
     }
 
     @Override
