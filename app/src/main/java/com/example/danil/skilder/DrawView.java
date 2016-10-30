@@ -1,12 +1,14 @@
 package com.example.danil.skilder;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -17,6 +19,8 @@ class DrawView extends View{
 
     private AbstractDrawTool tool;
     private final Paint paint = new Paint();
+    private Bitmap bitmap;
+    Canvas utilityCanvas;
     private Path path = new Path();
     {
         paint.setColor(Color.GREEN);
@@ -51,14 +55,18 @@ class DrawView extends View{
 
     @Override
     protected void onDraw(Canvas canvas){
-        canvas.drawPath(path, paint);
+        try {
+            utilityCanvas.drawPath(path, paint);
+            canvas.drawBitmap(bitmap, 0, 0, paint);
+        }catch (Exception e){
+            Log.d(this.getTag().toString(),"Error in onDraw:",e.getCause());
+        }
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
         switch (MotionEventCompat.getActionMasked(event)) {
-
             case MotionEvent.ACTION_DOWN:
                 if(tool != null) {
                     actualizeTool();
@@ -73,5 +81,9 @@ class DrawView extends View{
         }
         invalidate();
         return true;
+    }
+    public void setBitmap(Bitmap bitmap){
+        this.bitmap = bitmap;
+        utilityCanvas = new Canvas(bitmap);
     }
 }

@@ -61,7 +61,9 @@ public class DrawTool implements AbstractDrawTool {
     public int getGreen(){
         return (this.color & Color.argb(0,0,MAX_COLOR_VALUE, 0)) >> 8;
     }
+
     public int getParam(AllowedParams key){
+        
         switch (key){
             case RED:
                 return getRed();

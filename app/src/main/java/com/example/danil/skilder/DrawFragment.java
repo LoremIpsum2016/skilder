@@ -36,7 +36,7 @@ public class DrawFragment extends BaseFragment {
         });
         DrawView drawView = (DrawView) getView().findViewById(R.id.draw_zone);
         drawView.setTool(DrawTool.getInstance());
+        drawView.setBitmap( DrawStateManager.getInstance().getCurrentScreen());
     }
-
 
 }
