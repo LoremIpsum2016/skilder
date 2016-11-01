@@ -46,6 +46,9 @@ public class DrawStateManager {
         Log.d(TAG ,"Get current screen");
         return bitmaps.get(currentScreen);
     }
+    public void setCurrentScreen(Bitmap bitmap){
+        bitmaps.set(currentScreen, bitmap);
+    }
     public void setDimensions(int width, int height){
         this.width = width;
         this.height = height;
