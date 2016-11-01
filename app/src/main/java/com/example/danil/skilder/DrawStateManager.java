@@ -1,6 +1,7 @@
 package com.example.danil.skilder;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.util.Log;
 
@@ -30,7 +31,9 @@ public class DrawStateManager {
     public void newBitmap(){
         try {
             Log.d(TAG, "Create new bitmap");
-            bitmaps.add(Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888));
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            bitmap.eraseColor(Color.WHITE);
+            bitmaps.add(bitmap);
         } catch(Exception e){
             Log.d(TAG, "Some error on creating bitmap: ", e.getCause());
         }
