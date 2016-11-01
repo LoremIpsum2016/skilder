@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
+import com.flurry.android.FlurryAgent;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
@@ -44,7 +45,7 @@ public class BaseFragment extends Fragment {;
     public void onResume() {
 
         super.onResume();
-
+        FlurryAgent.onStartSession(getContext(), SkilderApplication.FLURRY_API_KEY);
         SkilderApplication application = (SkilderApplication) getActivity().getApplication();
         final Tracker tracker = application.getDefaultTracker();
         if (tracker != null) {

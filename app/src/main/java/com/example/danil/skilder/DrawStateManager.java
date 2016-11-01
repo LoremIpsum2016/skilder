@@ -24,6 +24,7 @@ public class DrawStateManager {
     }
 
     private DrawStateManager() {
+
     }
 
     public void newBitmap(){
@@ -63,5 +64,4 @@ public class DrawStateManager {
             bitmaps.set(i, rotatedBitmap);
         }
     }
-
 }
