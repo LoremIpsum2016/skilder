@@ -3,9 +3,12 @@ package com.example.danil.skilder;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
@@ -27,6 +30,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity implements BaseFragment.OnFragmentInteractionListener {
@@ -71,14 +75,14 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
     }
 
     public void onSaveButton() {
-        File directory = new File((Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/download/")); // Create imageDir
+        File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath().toString()); // Create imageDir
         File mypath = new File(directory, "test.png");
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(mypath);
             Bitmap bmp = DrawStateManager.getInstance().getCurrentScreen();
             bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
-            MediaStore.Images.Media.insertImage(this.getContentResolver(), bmp, "Test", "Test");
+            MediaStore.Images.Media.insertImage(this.getContentResolver(), bmp, UUID.randomUUID().toString()+".png", "drawing");
         } catch (Exception e) {
             Log.e("saveToExternalStorage()", e.getMessage());
         } finally {
@@ -92,6 +96,9 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
         }
     }
 
+    private static final int SELECT_PICTURE = 1;
+    private String selectedImagePath;
+
     private void onToolBarInteraction(int itemId) {
         if (itemId == R.id.action_brush) {
             getSupportFragmentManager().
@@ -103,6 +110,13 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
         }
         if (itemId == R.id.action_save) {
             onSaveButton();
+        }
+        if (itemId == R.id.action_gallery) {
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent,
+                    "Select Picture"), SELECT_PICTURE);
         }
     }
 
@@ -119,5 +133,44 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
             );
         }
 
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == SELECT_PICTURE) {
+                Uri selectedImageUri = data.getData();
+                selectedImagePath = getPath(selectedImageUri);
+                try {
+                    Bitmap lbmp = MediaStore.Images.Media.getBitmap(this.getContentResolver(),selectedImageUri);
+                    Bitmap dbmp = lbmp.copy(Bitmap.Config.ARGB_8888, true);
+                    DrawStateManager.getInstance().setCurrentScreen(dbmp);
+                } catch (Exception e) {
+                Log.e("getFromGallery", e.getMessage());
+            }
+        }
+        }
+    }
+
+    /**
+     * helper to retrieve the path of an image URI
+     */
+    public String getPath(Uri uri) {
+        // just some safety built in
+        if( uri == null ) {
+            // TODO perform some logging or show user feedback
+            return null;
+        }
+        // try to retrieve the image from the media store first
+        // this will only work for images selected from gallery
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        if( cursor != null ){
+            int column_index = cursor
+                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        }
+        // this is our fallback here
+        return uri.getPath();
     }
 }
