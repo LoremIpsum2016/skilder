@@ -5,6 +5,7 @@ package com.example.danil.skilder;
  */
 import android.app.Application;
 
+import com.flurry.android.FlurryAgent;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
@@ -14,11 +15,23 @@ import com.google.android.gms.analytics.Tracker;
  */
 public class SkilderApplication extends Application {
     private Tracker mTracker;
+    public static String FLURRY_API_KEY = "XFGMZ2TK37VJ33TG5DY2";
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        new FlurryAgent.Builder()
+                .withLogEnabled(true)
+                .build(this, FLURRY_API_KEY);
+    }
 
     /**
      * Gets the default {@link Tracker} for this {@link Application}.
      * @return tracker
      */
+
+
+
     synchronized public Tracker getDefaultTracker() {
         if (mTracker == null) {
             GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);

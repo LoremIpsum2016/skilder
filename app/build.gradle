@@ -24,5 +24,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.0'
     compile 'com.android.support:support-v4:24.2.0'
     compile 'com.google.android.gms:play-services-analytics:9.4.0'
+    compile 'com.flurry.android:analytics:6.3.1'
 }
 apply plugin: 'com.google.gms.google-services'

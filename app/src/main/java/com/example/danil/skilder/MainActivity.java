@@ -1,12 +1,8 @@
 package com.example.danil.skilder;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+
 import android.content.res.Configuration;
 import android.graphics.Point;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -34,15 +30,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
         int width = size.x;
         int height = size.y;
         DrawStateManager.getInstance().setDimensions(width,height);
-        GoogleAnalytics.getInstance(this).getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
-
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         initActivity();
-
-
-
     }
 
     private void initActivity(){
