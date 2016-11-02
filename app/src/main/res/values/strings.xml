@@ -11,4 +11,6 @@
     <string name="action_share">Share</string>
     <string name="action_camera">Camera</string>
     <string name="action_gallery">From gallery</string>
+    <string name="save_success"> Image successfully saved</string>
+    <string name="save_fail"> Ooops! Some error on saving image</string>
 </resources>

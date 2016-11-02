@@ -16,6 +16,7 @@ public class BaseFragment extends Fragment {;
     private OnFragmentInteractionListener mListener;
 
     public BaseFragment() {
+        Log.d(getLogTag(), "Create fragment " + this.getClass().getSimpleName());
     }
 
     @Override

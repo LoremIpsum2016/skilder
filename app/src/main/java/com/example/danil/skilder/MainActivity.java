@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Logger;
@@ -47,7 +48,22 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
         int width = size.x;
         int height = size.y;
         DrawStateManager.getInstance().setDimensions(width,height);
+        FileHelper.getInstance().setCallback(new FileHelper.Callback() {
+            @Override
+            public void onResult(boolean isSuccess) {
+                if(isSuccess){
+                    Toast.makeText(MainActivity.this, R.string.save_success, Toast.LENGTH_SHORT).show();
+                } else{
+                    Toast.makeText(MainActivity.this, R.string.save_fail, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         initActivity();
+    }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        FileHelper.getInstance().resetCallback();
     }
 
     private void initActivity(){
@@ -56,9 +72,9 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(R.id.fragment_container, new DrawFragment());
         transaction.commit();
-        Toolbar mToolbar_bottom = (Toolbar)findViewById(R.id.toolbar_bottom);
-        mToolbar_bottom.inflateMenu(R.menu.menu);
-        mToolbar_bottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+        Toolbar toolbarBottom = (Toolbar)findViewById(R.id.toolbar_bottom);
+        toolbarBottom.inflateMenu(R.menu.menu);
+        toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 onToolBarInteraction(item.getItemId());
@@ -75,25 +91,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
     }
 
     public void onSaveButton() {
-        File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath().toString()); // Create imageDir
-        File mypath = new File(directory, "test.png");
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(mypath);
-            Bitmap bmp = DrawStateManager.getInstance().getCurrentScreen();
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
-            MediaStore.Images.Media.insertImage(this.getContentResolver(), bmp, UUID.randomUUID().toString()+".png", "drawing");
-        } catch (Exception e) {
-            Log.e("saveToExternalStorage()", e.getMessage());
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                Log.e("close FileOutput", e.getMessage());
-            }
-        }
+        FileHelper.getInstance().saveCurrentScreen(this);
     }
 
     private static final int SELECT_PICTURE = 1;
@@ -144,6 +142,12 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
                     Bitmap lbmp = MediaStore.Images.Media.getBitmap(this.getContentResolver(),selectedImageUri);
                     Bitmap dbmp = lbmp.copy(Bitmap.Config.ARGB_8888, true);
                     DrawStateManager.getInstance().setCurrentScreen(dbmp);
+                    getSupportFragmentManager().
+                            beginTransaction().
+                            replace(
+                                    R.id.fragment_container,
+                                    new DrawFragment()
+                            ).commit();
                 } catch (Exception e) {
                 Log.e("getFromGallery", e.getMessage());
             }

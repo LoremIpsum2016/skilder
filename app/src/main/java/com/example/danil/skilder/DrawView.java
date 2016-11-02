@@ -44,13 +44,8 @@ class DrawView extends View{
     }
     public void setTool(AbstractDrawTool tool){
         this.tool = tool;
-    }
-
-    private void actualizeTool(){
-        if(tool != null){
-            paint.setColor(tool.getColor());
-            paint.setStrokeWidth(tool.getWidth());
-        }
+        paint.setColor(tool.getColor());
+        paint.setStrokeWidth(tool.getWidth());
     }
 
     @Override
@@ -68,9 +63,6 @@ class DrawView extends View{
         float y = event.getY();
         switch (MotionEventCompat.getActionMasked(event)) {
             case MotionEvent.ACTION_DOWN:
-                if(tool != null) {
-                    actualizeTool();
-                }
                 path.moveTo(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
