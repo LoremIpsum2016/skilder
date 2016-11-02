@@ -1,5 +1,7 @@
 package com.example.danil.skilder;
 
+import java.util.concurrent.Executor;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
@@ -29,8 +31,6 @@ public class FileHelper {
     }
 
     private final Executor executor = Executors.newCachedThreadPool();
-
-    private LruCache<String, String> cache = new LruCache<>(32);
 
     private Callback callback;
 
