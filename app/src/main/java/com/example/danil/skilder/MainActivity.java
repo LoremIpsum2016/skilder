@@ -12,12 +12,13 @@ import android.view.Display;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Logger;
 
 
 public class MainActivity extends AppCompatActivity implements BaseFragment.OnFragmentInteractionListener {
-
 
 
     @Override
@@ -49,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
             }
         });
 
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+
     }
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -65,6 +69,13 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
                             R.id.fragment_container,
                             new ChooseToolFragment()
                     ).addToBackStack("ChooseTool").commit();
+        } else if(itemId == R.id.action_share) { //add share fragment on toolbar click
+            getSupportFragmentManager().
+                    beginTransaction().
+                    replace(
+                            R.id.fragment_container,
+                            new ShareFragment()
+                    ).addToBackStack("Share").commit();
         }
     }
 
@@ -74,7 +85,12 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
             if(action.equals(ChooseToolFragment.BACK_TO_MAIN)) {
                 getSupportFragmentManager().popBackStack();
             }
-        } else {
+        }
+        //with share interaction
+        else if (clazz.equals(ShareFragment.class)) {
+            getSupportFragmentManager().popBackStack();
+        }
+        else {
             throw new IllegalArgumentException(
                     "MainActivity.OnFragmentInteraction not implemented for " +
                             clazz.getName()
