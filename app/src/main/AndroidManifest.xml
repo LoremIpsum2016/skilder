@@ -3,6 +3,7 @@
     package="com.example.danil.skilder">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <application
 
         android:name=".SkilderApplication"
@@ -13,12 +14,15 @@
 
         android:theme="@style/AppTheme">`
         <activity android:name=".MainActivity" android:configChanges="orientation|screenSize">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />        </intent-filter>
         </activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="a9b3d8d0040e316727c8259fcde13d5d2cd7ca9c"
+            />
     </application>
 
 </manifest>
