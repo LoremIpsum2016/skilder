@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">skilder</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="red_component">Red component</string>
+    <string name="green_component">Green component</string>
+    <string name="blue_component">Blue component</string>
+    <string name="brush_width">Brush width</string>
+    <string name="action_brush">Choose tool</string>
+    <string name="action_save">Save in gallery</string>
+    <string name="action_share">Share</string>
+    <string name="action_camera">Camera</string>
+    <string name="action_gallery">From gallery</string>
+    <string name="sshare_google">Google+</string>
+    <string name="sshare_vk">VK</string>
+    <string name="sshare_facebook">Facebook</string>
+    <string name="facebook_app_id">801951719946172</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
