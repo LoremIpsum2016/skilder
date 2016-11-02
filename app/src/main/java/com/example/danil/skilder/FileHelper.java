@@ -6,14 +6,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.util.LruCache;
 import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
@@ -44,7 +42,7 @@ public class FileHelper {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath().toString()); // Create imageDir
+                File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath()); // Create imageDir
                 File mypath = new File(directory, "test.png");
                 FileOutputStream out = null;
                 try {

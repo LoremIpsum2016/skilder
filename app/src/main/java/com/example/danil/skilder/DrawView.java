@@ -74,6 +74,10 @@ class DrawView extends View{
         invalidate();
         return true;
     }
+    public void resetPath(){
+        path.reset();
+    }
+
     public void setBitmap(Bitmap bitmap){
         this.bitmap = bitmap;
         utilityCanvas = new Canvas(bitmap);

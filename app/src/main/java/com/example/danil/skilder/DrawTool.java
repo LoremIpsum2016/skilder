@@ -11,6 +11,7 @@ public class DrawTool implements AbstractDrawTool {
     public static int MAX_COLOR_VALUE = 255;
     public static int MAX_BRUSH_SIZE  = 24;
     private static DrawTool tool = new DrawTool();
+    public final static String MESSAGE_TOOL_CHANGED = "MESSAGE_TOOL_CHANGED";
 
     private DrawTool(){};
 
@@ -51,6 +52,7 @@ public class DrawTool implements AbstractDrawTool {
             case WIDTH:
                 this.width = value;
         }
+        Notifier.getInstance().publish(MESSAGE_TOOL_CHANGED);
     }
     public int getBlue(){
         return this.color & Color.argb(0,0,0, MAX_COLOR_VALUE);

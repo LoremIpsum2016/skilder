@@ -15,32 +15,14 @@ import java.util.UUID;
  * Created by danil on 30.10.16.
  */
 public class DrawStateManager {
-    private static DrawStateManager ourInstance   = new DrawStateManager();
-    private final static String     TAG           = "DrawStateManager";
-    private List<Bitmap>            bitmaps       = new ArrayList<>();
-    private int                     currentScreen = 0;
-    private int                     width         = 0;
-    private int                     height        = 0;
-    private int                     angle         = -90;
-    private Map<String,Subscriber>  subscribers   = new HashMap<>();
-
-    public interface Subscriber{
-        public void onNotyfyChanged();
-        public void setSubscriberId(String id);
-    }
-    public void subscribe (Subscriber subscriber){
-        String id = UUID.randomUUID().toString();
-        subscriber.setSubscriberId(id);
-        subscribers.put(id, subscriber);
-    }
-    public void unsubscribe(String id){
-        subscribers.remove(id);
-    }
-    private void notifySubscribers(){
-        for(Map.Entry<String,Subscriber> entry : subscribers.entrySet()){
-            entry.getValue().onNotyfyChanged();
-        }
-    }
+    private static DrawStateManager ourInstance           = new DrawStateManager();
+    private final static String     TAG                   = "DrawStateManager";
+    private List<Bitmap>            bitmaps               = new ArrayList<>();
+    private int                     currentScreen         = 0;
+    private int                     width                 = 0;
+    private int                     height                = 0;
+    private int                     angle                 = -90;
+    public final static String      MESSAGE_CHANGE_SCREEN = "MESSAGE_CHANGE_SCREEN";
 
     public static DrawStateManager getInstance() {
         return ourInstance;
@@ -69,7 +51,7 @@ public class DrawStateManager {
     }
     public void setCurrentScreen(Bitmap bitmap){
         bitmaps.set(currentScreen, bitmap);
-        notifySubscribers();
+        Notifier.getInstance().publish(MESSAGE_CHANGE_SCREEN);
     }
     public void setDimensions(int width, int height){
         this.width = width;

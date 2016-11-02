@@ -12,7 +12,7 @@ import android.widget.Button;
 import com.google.android.gms.analytics.Tracker;
 
 
-public class DrawFragment extends BaseFragment implements DrawStateManager.Subscriber {
+public class DrawFragment extends BaseFragment implements Notifier.Subscriber {
 
     private  String subscriberId;
     public DrawFragment() {
@@ -27,13 +27,14 @@ public class DrawFragment extends BaseFragment implements DrawStateManager.Subsc
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
-        DrawStateManager.getInstance().subscribe(this);
+        String[] subscriptions =  {DrawTool.MESSAGE_TOOL_CHANGED, DrawStateManager.MESSAGE_CHANGE_SCREEN};
+        Notifier.getInstance().subscribe(this, subscriptions);
         initializeFragment();
     }
     @Override
     public void onDestroy(){
         super.onDestroy();
-        DrawStateManager.getInstance().unsubscribe(subscriberId);
+        Notifier.getInstance().unsubscribe(subscriberId);
     }
 
     private void initializeFragment(){
@@ -46,8 +47,19 @@ public class DrawFragment extends BaseFragment implements DrawStateManager.Subsc
     }
 
     @Override
-    public void onNotyfyChanged() {
-        initializeFragment();
+    public void onNotyfyChanged(String message) {
+        View view = getView();
+        if(view != null  && message != null) {
+            DrawView drawView = (DrawView) view.findViewById(R.id.draw_zone);
+            if(message.equals(DrawTool.MESSAGE_TOOL_CHANGED)){
+                drawView.setTool(DrawTool.getInstance());
+            } else if(message.equals(DrawStateManager.MESSAGE_CHANGE_SCREEN)){
+                drawView.resetPath();
+                drawView.setBitmap(DrawStateManager.getInstance().getCurrentScreen());
+            } else{
+                Log.d(getLogTag(), "Unexpected message: " + message);
+            }
+        }
     }
 
     @Override
