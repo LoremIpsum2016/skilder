@@ -19,30 +19,23 @@ import java.util.concurrent.Executors;
  */
 public class FileHelper {
     private static final FileHelper ourInstance = new FileHelper();
+    public static final String MESSAGE_SAVE_SUCCESS = "MESSAGE_SAVE_SUCCESS ";
+    public static final String MESSAGE_SAVE_FAIL =    "MESSAGE_SAVE_FAIL";
 
+    public interface Callback{
+        void onResult();
+    }
     public static FileHelper getInstance() {
         return ourInstance;
     }
 
-    public interface Callback{
-        void onResult(boolean isSuccess);
-    }
-
     private final Executor executor = Executors.newCachedThreadPool();
 
-    private Callback callback;
-
-    public void setCallback(Callback callback) {
-        this.callback = callback;
-    }
-    public void resetCallback(){
-        this.callback = null;
-    }
     public void saveCurrentScreen(final Context context) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath()); // Create imageDir
+                File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
                 File mypath = new File(directory, "test.png");
                 FileOutputStream out = null;
                 try {
@@ -50,10 +43,10 @@ public class FileHelper {
                     Bitmap bmp = DrawStateManager.getInstance().getCurrentScreen();
                     bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
                     MediaStore.Images.Media.insertImage(context.getContentResolver(), bmp, UUID.randomUUID().toString()+".png", "drawing");
-                    notifyResult(true);
+                    Notifier.getInstance().publish(MESSAGE_SAVE_SUCCESS);
                 } catch (Exception e) {
                     Log.e("saveToExternalStorage()", e.getMessage());
-                    notifyResult(false);
+                    Notifier.getInstance().publish(MESSAGE_SAVE_FAIL);
                 } finally {
                     try {
                         if (out != null) {
@@ -67,14 +60,4 @@ public class FileHelper {
         });
     }
 
-    private void notifyResult( final boolean isSuccess) {
-        Ui.run(new Runnable() {
-            @Override
-            public void run() {
-                if (callback != null) {
-                    callback.onResult(isSuccess);
-                }
-            }
-        });
-    }
 }

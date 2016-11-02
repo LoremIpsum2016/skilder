@@ -11,7 +11,7 @@ import android.widget.SeekBar;
 
 public class ChooseToolFragment extends BaseFragment {
 
-    public final static String BACK_TO_MAIN ="BACK_TO_MAIN";
+    public final static String MESSAGE_TOOL_CHOOSED ="MESSAGE_TOOL_CHOOSED";
 
     public ChooseToolFragment() {
     }
@@ -57,9 +57,14 @@ public class ChooseToolFragment extends BaseFragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onFragmentInteraction(BACK_TO_MAIN, null);
+                getActivity().getSupportFragmentManager().popBackStack();
             }
         });
+    }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        Notifier.getInstance().publish(MESSAGE_TOOL_CHOOSED);
     }
 
     private SeekBar.OnSeekBarChangeListener getListener(final DrawTool.AllowedParams param){

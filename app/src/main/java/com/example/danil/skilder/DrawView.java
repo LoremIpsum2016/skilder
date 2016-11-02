@@ -17,7 +17,6 @@ import android.view.View;
  */
 class DrawView extends View{
 
-    private AbstractDrawTool tool;
     private final Paint paint = new Paint();
     private Bitmap bitmap;
     Canvas utilityCanvas;
@@ -43,7 +42,6 @@ class DrawView extends View{
         paint.setStrokeWidth(size);
     }
     public void setTool(AbstractDrawTool tool){
-        this.tool = tool;
         paint.setColor(tool.getColor());
         paint.setStrokeWidth(tool.getWidth());
     }
@@ -74,11 +72,8 @@ class DrawView extends View{
         invalidate();
         return true;
     }
-    public void resetPath(){
-        path.reset();
-    }
-
     public void setBitmap(Bitmap bitmap){
+        path.reset();
         this.bitmap = bitmap;
         utilityCanvas = new Canvas(bitmap);
     }

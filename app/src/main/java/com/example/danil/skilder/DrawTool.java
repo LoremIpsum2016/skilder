@@ -78,9 +78,6 @@ public class DrawTool implements AbstractDrawTool {
         }
         return 0;
     }
-    public void reset(){
-        this.color = 0;
-    }
     public static DrawTool getInstance(){
         return tool;
     }

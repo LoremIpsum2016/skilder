@@ -1,6 +1,5 @@
 package com.example.danil.skilder;
 
-import java.lang.reflect.Array;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,23 +15,34 @@ public class Notifier {
     private Map<String,SubscriberInfo>  subscribersInfo   = new HashMap<>();
 
     public interface Subscriber{
-        void onNotyfyChanged(String message);
+        void onNotifyChanged(String message);
         void setSubscriberId(String id);
     }
     private class SubscriberInfo{
         private Subscriber  subscriber;
         private Set<String> subscriptions;
+        private boolean     uiRun;
 
-        public SubscriberInfo(Subscriber subscriber, String[] subscriptions){
+        public SubscriberInfo(Subscriber subscriber, String[] subscriptions, boolean uiRun  ){
             this.subscriber    = subscriber;
             this.subscriptions = new HashSet<>();
+            this.uiRun = uiRun;
             Collections.addAll(this.subscriptions, subscriptions);
         }
         public boolean hasSubscription(String subscription){
             return subscription.contains(subscription);
         }
-        public void notifySubscriber(String message){
-            subscriber.onNotyfyChanged(message);
+        public void notifySubscriber(final String message){
+            if(uiRun){
+                Ui.run(new Runnable() {
+                    @Override
+                    public void run() {
+                        subscriber.onNotifyChanged(message);
+                    }
+                });
+            } else {
+                subscriber.onNotifyChanged(message);
+            }
         }
 
     }
@@ -44,13 +54,16 @@ public class Notifier {
         return ourInstance;
     }
 
-    public void subscribe (Subscriber subscriber, String[] subscriptions){
+    public void subscribe (Subscriber subscriber, String[] subscriptions, boolean uiRun){
         String id;
         do {
             id = UUID.randomUUID().toString();
         } while (subscribersInfo.containsKey(id));
         subscriber.setSubscriberId(id);
-        subscribersInfo.put(id,new SubscriberInfo(subscriber, subscriptions));
+        subscribersInfo.put(id,new SubscriberInfo(subscriber, subscriptions, uiRun));
+    }
+    public void subscribe(Subscriber subscriber, String[] subscriptions){
+        subscribe(subscriber,subscriptions,true);
     }
     public void unsubscribe(String id){
         subscribersInfo.remove(id);

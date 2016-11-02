@@ -6,15 +6,14 @@ import android.graphics.Matrix;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+
 
 /**
  * Created by danil on 30.10.16.
  */
-public class DrawStateManager {
+public class
+DrawStateManager {
     private static DrawStateManager ourInstance           = new DrawStateManager();
     private final static String     TAG                   = "DrawStateManager";
     private List<Bitmap>            bitmaps               = new ArrayList<>();

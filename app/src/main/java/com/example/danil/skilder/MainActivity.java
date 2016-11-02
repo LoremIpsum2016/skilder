@@ -1,15 +1,12 @@
 package com.example.danil.skilder;
 
 
-import android.content.Context;
-import android.content.ContextWrapper;
+
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -19,25 +16,22 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
 import android.view.MenuItem;
-import android.view.WindowManager;
+import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.Logger;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 
-public class MainActivity extends AppCompatActivity implements BaseFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements Notifier.Subscriber {
 
 
-    private boolean currentScreenIsMain = true;
+    private String subscriberId;
+    private static String TAG = "MainActivity";
+    private static String[] SUBSCRIPTIONS ={
+            ChooseToolFragment.MESSAGE_TOOL_CHOOSED,
+            FileHelper.MESSAGE_SAVE_SUCCESS,
+            FileHelper.MESSAGE_SAVE_FAIL,
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,22 +43,13 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
         int width = size.x;
         int height = size.y;
         DrawStateManager.getInstance().setDimensions(width,height);
-        FileHelper.getInstance().setCallback(new FileHelper.Callback() {
-            @Override
-            public void onResult(boolean isSuccess) {
-                if(isSuccess){
-                    Toast.makeText(MainActivity.this, R.string.save_success, Toast.LENGTH_SHORT).show();
-                } else{
-                    Toast.makeText(MainActivity.this, R.string.save_fail, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        Notifier.getInstance().subscribe(this,SUBSCRIPTIONS);
         initActivity();
     }
     @Override
     public void onDestroy(){
         super.onDestroy();
-        FileHelper.getInstance().resetCallback();
+        Notifier.getInstance().unsubscribe(this.subscriberId);
     }
 
     private void initActivity(){
@@ -105,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
                             R.id.fragment_container,
                             new ChooseToolFragment()
                     ).addToBackStack("ChooseTool").commit();
+                    Toolbar toolbarBottom = (Toolbar)findViewById(R.id.toolbar_bottom);
+                    toolbarBottom.setVisibility(View.GONE);
         }
         if (itemId == R.id.action_save) {
             onSaveButton();
@@ -116,21 +103,6 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
             startActivityForResult(Intent.createChooser(intent,
                     "Select Picture"), SELECT_PICTURE);
         }
-    }
-
-    @Override
-    public void onFragmentInteraction(Class clazz, String action, Bundle extra) {
-        if (clazz.equals(ChooseToolFragment.class)) {
-            if(action.equals(ChooseToolFragment.BACK_TO_MAIN)) {
-                getSupportFragmentManager().popBackStack();
-            }
-        } else {
-            throw new IllegalArgumentException(
-                    "MainActivity.OnFragmentInteraction not implemented for " +
-                            clazz.getName()
-            );
-        }
-
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -146,5 +118,26 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.OnFr
                 }
             }
         }
+    }
+
+    @Override
+    public void onNotifyChanged(String message) {
+        if(message == null ){
+            Log.d(TAG,"Recieved null message");
+        } else if( message.equals(ChooseToolFragment.MESSAGE_TOOL_CHOOSED)){
+            Toolbar toolbarBottom = (Toolbar)findViewById(R.id.toolbar_bottom);
+            toolbarBottom.setVisibility(View.VISIBLE);
+        } else if( message.equals(FileHelper.MESSAGE_SAVE_SUCCESS)){
+            Toast.makeText(MainActivity.this, R.string.save_success, Toast.LENGTH_SHORT).show();
+        } else if( message.equals(FileHelper.MESSAGE_SAVE_FAIL)){
+            Toast.makeText(MainActivity.this, R.string.save_fail, Toast.LENGTH_SHORT).show();
+        } else{
+            Log.d(TAG,"Unexpected message: " + message);
+        }
+    }
+
+    @Override
+    public void setSubscriberId(String id) {
+        this.subscriberId = id;
     }
 }
