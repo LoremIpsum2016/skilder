@@ -27,15 +27,13 @@ import io.fabric.sdk.android.Fabric;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.UUID;
-
 
 public class MainActivity extends AppCompatActivity implements Notifier.Subscriber {
 
 
+    private static final int REQUEST_SELECT_PICTURE = 1;
+    private static final int REQUEST_SHARE_PICTURE =  2;
+    private static final int REQUEST_CAMERA = 3;
     private String lastSharedFile ;
     private String subscriberId;
     private static String TAG = "MainActivity";
@@ -97,9 +95,6 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
         FileHelper.getInstance().saveCurrentScreen(this);
     }
 
-    private static final int SELECT_PICTURE = 1;
-    private static final int SHARE_PICTURE =  2;
-
 
     private void onToolBarInteraction(int itemId) {
         if (itemId == R.id.action_brush) {
@@ -111,22 +106,26 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
                     ).addToBackStack("ChooseTool").commit();
         } else if(itemId == R.id.action_share) { //add share fragment on toolbar click
                 FileHelper.getInstance().prepareToShare();
-        }
-        if (itemId == R.id.action_save) {
+        } else if (itemId == R.id.action_save) {
             onSaveButton();
-        }
-        if (itemId == R.id.action_gallery) {
+        } else if (itemId == R.id.action_gallery) {
             Intent intent = new Intent();
             intent.setType("image/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(Intent.createChooser(intent,
-                    "Select Picture"), SHARE_PICTURE);
+                    "Select Picture"), REQUEST_SELECT_PICTURE);
+        } else if (itemId == R.id.action_camera){
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, REQUEST_CAMERA);
+            }
+
         }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            if (requestCode == SELECT_PICTURE) {
+            if (requestCode == REQUEST_SELECT_PICTURE) {
                 Uri selectedImageUri = data.getData();
                 try {
                     Bitmap lbmp = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
@@ -135,11 +134,16 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
                 } catch (Exception e) {
                     Log.e("getFromGallery", e.getMessage());
                 }
-            } else if (requestCode == SHARE_PICTURE){
+            } else if (requestCode == REQUEST_SHARE_PICTURE){
                 FileHelper.getInstance().delete(lastSharedFile);
+            } else if (requestCode == REQUEST_CAMERA) {
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                DrawStateManager.getInstance().setCurrentScreen(imageBitmap);
             }
+
         } else if( resultCode == RESULT_CANCELED){
-            if (requestCode == SHARE_PICTURE) {
+            if (requestCode == REQUEST_SHARE_PICTURE) {
                 FileHelper.getInstance().delete(lastSharedFile);
             }
         }
@@ -162,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
                 Uri photoUri = Uri.parse("file://" + lastSharedFile);
                 shareIntent.setType("image/png");
                 shareIntent.putExtra(Intent.EXTRA_STREAM, photoUri);
-                this.startActivityForResult(Intent.createChooser(shareIntent, "Share Via"), RESULT_OK);
+                this.startActivityForResult(Intent.createChooser(shareIntent, "Share Via"), REQUEST_SHARE_PICTURE);
             } else {
                 Log.d(TAG, "Invalid format of data in message: " + FileHelper.MESSAGE_TMP_CREATED);
             }

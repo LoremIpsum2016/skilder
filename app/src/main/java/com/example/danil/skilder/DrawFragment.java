@@ -46,12 +46,16 @@ public class DrawFragment extends BaseFragment implements Notifier.Subscriber {
         View view = getView();
         if(view != null  && message != null) {
             DrawView drawView = (DrawView) view.findViewById(R.id.draw_zone);
-            if(message.equals(DrawTool.MESSAGE_TOOL_CHANGED)){
-                drawView.setTool(DrawTool.getInstance());
-            } else if(message.equals(DrawStateManager.MESSAGE_CHANGE_SCREEN)){
-                drawView.setBitmap(DrawStateManager.getInstance().getCurrentScreen());
-            } else{
-                Log.d(getLogTag(), "Unexpected message: " + message);
+            switch (message) {
+                case DrawTool.MESSAGE_TOOL_CHANGED:
+                    drawView.setTool(DrawTool.getInstance());
+                    break;
+                case DrawStateManager.MESSAGE_CHANGE_SCREEN:
+                    drawView.setBitmap(DrawStateManager.getInstance().getCurrentScreen());
+                    break;
+                default:
+                    Log.d(getLogTag(), "Unexpected message: " + message);
+                    break;
             }
         }
     }
