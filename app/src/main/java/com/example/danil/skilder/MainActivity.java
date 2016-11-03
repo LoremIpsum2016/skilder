@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -25,8 +26,11 @@ import io.fabric.sdk.android.Fabric;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.Logger;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity implements Notifier.Subscriber {
@@ -92,6 +96,8 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
     }
 
     private static final int SELECT_PICTURE = 1;
+    private static final int SHARE_PICTURE =  2;
+
 
     private void onToolBarInteraction(int itemId) {
         if (itemId == R.id.action_brush) {
@@ -102,14 +108,15 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
                             new ChooseToolFragment()
                     ).addToBackStack("ChooseTool").commit();
         } else if(itemId == R.id.action_share) { //add share fragment on toolbar click
-            getSupportFragmentManager().
-                    beginTransaction().
-                    replace(
-                            R.id.fragment_container,
-                            new ShareFragment()
-                    ).addToBackStack("Share").commit();
-                    Toolbar toolbarBottom = (Toolbar)findViewById(R.id.toolbar_bottom);
-                    toolbarBottom.setVisibility(View.GONE);
+//            getSupportFragmentManager().
+//                    beginTransaction().
+//                    replace(
+//                            R.id.fragment_container,
+//                            new ShareFragment()
+//                    ).addToBackStack("Share").commit();
+//                    Toolbar toolbarBottom = (Toolbar)findViewById(R.id.toolbar_bottom);
+//                    toolbarBottom.setVisibility(View.GONE);
+            share();
         }
         if (itemId == R.id.action_save) {
             onSaveButton();
@@ -119,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
             intent.setType("image/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(Intent.createChooser(intent,
-                    "Select Picture"), SELECT_PICTURE);
+                    "Select Picture"), SHARE_PICTURE);
         }
     }
 
@@ -134,10 +141,65 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
                 } catch (Exception e) {
                     Log.e("getFromGallery", e.getMessage());
                 }
+            } else if (requestCode == SHARE_PICTURE){
+                File file = new File (localAbsoluteFilePath);
+                file.delete();
             }
+        } else if( resultCode == RESULT_CANCELED){
+                File file = new File (localAbsoluteFilePath);
+                file.delete();
         }
     }
 
+    private String localAbsoluteFilePath;
+    private void share(){
+
+        localAbsoluteFilePath = saveImageLocally(DrawStateManager.getInstance().getCurrentScreen());
+
+        if (localAbsoluteFilePath!=null && localAbsoluteFilePath!="") {
+
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            Uri phototUri = Uri.parse("file://" + localAbsoluteFilePath);
+
+            File file = new File(phototUri.getPath());
+
+            Log.d(TAG, "file path: " +file.getPath());
+
+            if(file.exists()) {
+                // file create success
+
+            } else {
+                // file create fail
+            }
+            //shareIntent.setData(phototUri);
+            shareIntent.setType("image/png");
+            shareIntent.putExtra(Intent.EXTRA_STREAM, phototUri);
+            this.startActivityForResult(Intent.createChooser(shareIntent, "Share Via"), RESULT_OK);
+        }
+    }
+/* SAVE IMAGE FUNCTION */
+
+    private String saveImageLocally(Bitmap _bitmap) {
+
+        File outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File outputFile = null;
+        try {
+            outputFile = File.createTempFile("tmp" + UUID.randomUUID().toString(), ".png", outputDir);
+        } catch (IOException e1) {
+            // handle exception
+        }
+
+        try {
+            FileOutputStream out = new FileOutputStream(outputFile);
+            _bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.close();
+
+        } catch (Exception e) {
+            // handle exception
+        }
+
+        return outputFile.getAbsolutePath();
+    }
     @Override
     public void onNotifyChanged(String message) {
         if(message == null ){
