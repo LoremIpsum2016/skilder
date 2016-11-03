@@ -1,23 +1,27 @@
 package com.example.danil.skilder;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Created by danil on 30.10.16.
  */
-public class DrawStateManager {
-    private static DrawStateManager ourInstance   = new DrawStateManager();
-    private final static String     TAG           = "DrawStateManager";
-    private List<Bitmap>            bitmaps       = new ArrayList<>();
-    private int                     currentScreen = 0;
-    private int                     width         = 0;
-    private int                     height        = 0;
-    private int                     angle         = -90;
+public class
+DrawStateManager {
+    private static DrawStateManager ourInstance           = new DrawStateManager();
+    private final static String     TAG                   = "DrawStateManager";
+    private List<Bitmap>            bitmaps               = new ArrayList<>();
+    private int                     currentScreen         = 0;
+    private int                     width                 = 0;
+    private int                     height                = 0;
+    private int                     angle                 = -90;
+    public final static String      MESSAGE_CHANGE_SCREEN = "MESSAGE_CHANGE_SCREEN";
 
     public static DrawStateManager getInstance() {
         return ourInstance;
@@ -26,11 +30,12 @@ public class DrawStateManager {
     private DrawStateManager() {
 
     }
-
     public void newBitmap(){
         try {
             Log.d(TAG, "Create new bitmap");
-            bitmaps.add(Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888));
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            bitmap.eraseColor(Color.WHITE);
+            bitmaps.add(bitmap);
         } catch(Exception e){
             Log.d(TAG, "Some error on creating bitmap: ", e.getCause());
         }
@@ -45,6 +50,7 @@ public class DrawStateManager {
     }
     public void setCurrentScreen(Bitmap bitmap){
         bitmaps.set(currentScreen, bitmap);
+        Notifier.getInstance().publish(MESSAGE_CHANGE_SCREEN);
     }
     public void setDimensions(int width, int height){
         this.width = width;

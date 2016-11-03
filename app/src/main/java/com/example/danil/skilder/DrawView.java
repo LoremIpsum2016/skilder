@@ -17,7 +17,6 @@ import android.view.View;
  */
 class DrawView extends View{
 
-    private AbstractDrawTool tool;
     private final Paint paint = new Paint();
     private Bitmap bitmap;
     Canvas utilityCanvas;
@@ -43,14 +42,8 @@ class DrawView extends View{
         paint.setStrokeWidth(size);
     }
     public void setTool(AbstractDrawTool tool){
-        this.tool = tool;
-    }
-
-    private void actualizeTool(){
-        if(tool != null){
-            paint.setColor(tool.getColor());
-            paint.setStrokeWidth(tool.getWidth());
-        }
+        paint.setColor(tool.getColor());
+        paint.setStrokeWidth(tool.getWidth());
     }
 
     @Override
@@ -68,9 +61,6 @@ class DrawView extends View{
         float y = event.getY();
         switch (MotionEventCompat.getActionMasked(event)) {
             case MotionEvent.ACTION_DOWN:
-                if(tool != null) {
-                    actualizeTool();
-                }
                 path.moveTo(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -83,6 +73,7 @@ class DrawView extends View{
         return true;
     }
     public void setBitmap(Bitmap bitmap){
+        path.reset();
         this.bitmap = bitmap;
         utilityCanvas = new Canvas(bitmap);
     }

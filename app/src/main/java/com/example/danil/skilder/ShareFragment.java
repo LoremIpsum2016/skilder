@@ -61,14 +61,14 @@ public class ShareFragment extends BaseFragment{
             @Override
             public void onClick(View v) {
                 postGoogle();
-                onFragmentInteraction(POST_GOOGLE, null);
+                //onFragmentInteraction(POST_GOOGLE, null);
             }
         });
 
         mButtonVK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onFragmentInteraction(POST_VK, null);
+                //onFragmentInteraction(POST_VK, null);
             }
         });
 
@@ -76,7 +76,7 @@ public class ShareFragment extends BaseFragment{
             @Override
             public void onClick(View v) {
                 postFacebook();
-                onFragmentInteraction(POST_FACEBOOK, null);
+                //onFragmentInteraction(POST_FACEBOOK, null);
             }
         });
     }
