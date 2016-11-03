@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -23,18 +24,27 @@ import com.crashlytics.android.Crashlytics;
 
 import io.fabric.sdk.android.Fabric;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.UUID;
+
 
 public class MainActivity extends AppCompatActivity implements Notifier.Subscriber {
 
 
+    private String lastSharedFile ;
     private String subscriberId;
     private static String TAG = "MainActivity";
     private static String[] SUBSCRIPTIONS ={
             ChooseToolFragment.MESSAGE_TOOL_CHOOSED,
             FileHelper.MESSAGE_SAVE_SUCCESS,
             FileHelper.MESSAGE_SAVE_FAIL,
+            FileHelper.MESSAGE_TMP_CREATED
     };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
             }
         });
 
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+
     }
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -85,6 +98,8 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
     }
 
     private static final int SELECT_PICTURE = 1;
+    private static final int SHARE_PICTURE =  2;
+
 
     private void onToolBarInteraction(int itemId) {
         if (itemId == R.id.action_brush) {
@@ -94,8 +109,8 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
                             R.id.fragment_container,
                             new ChooseToolFragment()
                     ).addToBackStack("ChooseTool").commit();
-                    Toolbar toolbarBottom = (Toolbar)findViewById(R.id.toolbar_bottom);
-                    toolbarBottom.setVisibility(View.GONE);
+        } else if(itemId == R.id.action_share) { //add share fragment on toolbar click
+                FileHelper.getInstance().prepareToShare();
         }
         if (itemId == R.id.action_save) {
             onSaveButton();
@@ -105,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
             intent.setType("image/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(Intent.createChooser(intent,
-                    "Select Picture"), SELECT_PICTURE);
+                    "Select Picture"), SHARE_PICTURE);
         }
     }
 
@@ -114,18 +129,23 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
             if (requestCode == SELECT_PICTURE) {
                 Uri selectedImageUri = data.getData();
                 try {
-                    Bitmap lbmp = MediaStore.Images.Media.getBitmap(this.getContentResolver(),selectedImageUri);
+                    Bitmap lbmp = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
                     Bitmap dbmp = lbmp.copy(Bitmap.Config.ARGB_8888, true);
                     DrawStateManager.getInstance().setCurrentScreen(dbmp);
                 } catch (Exception e) {
                     Log.e("getFromGallery", e.getMessage());
                 }
+            } else if (requestCode == SHARE_PICTURE){
+                FileHelper.getInstance().delete(lastSharedFile);
+            }
+        } else if( resultCode == RESULT_CANCELED){
+            if (requestCode == SHARE_PICTURE) {
+                FileHelper.getInstance().delete(lastSharedFile);
             }
         }
     }
-
     @Override
-    public void onNotifyChanged(String message) {
+    public void onNotifyChanged(String message, Bundle data) {
         if(message == null ){
             Log.d(TAG,"Recieved null message");
         } else if( message.equals(ChooseToolFragment.MESSAGE_TOOL_CHOOSED)){
@@ -135,7 +155,18 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
             Toast.makeText(MainActivity.this, R.string.save_success, Toast.LENGTH_SHORT).show();
         } else if( message.equals(FileHelper.MESSAGE_SAVE_FAIL)){
             Toast.makeText(MainActivity.this, R.string.save_fail, Toast.LENGTH_SHORT).show();
-        } else{
+        }else if(message.equals(FileHelper.MESSAGE_TMP_CREATED)) {
+            if(data != null && data.containsKey("path")){
+                lastSharedFile = data.getString("path");
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                Uri photoUri = Uri.parse("file://" + lastSharedFile);
+                shareIntent.setType("image/png");
+                shareIntent.putExtra(Intent.EXTRA_STREAM, photoUri);
+                this.startActivityForResult(Intent.createChooser(shareIntent, "Share Via"), RESULT_OK);
+            } else {
+                Log.d(TAG, "Invalid format of data in message: " + FileHelper.MESSAGE_TMP_CREATED);
+            }
+        }else{
             Log.d(TAG,"Unexpected message: " + message);
         }
     }

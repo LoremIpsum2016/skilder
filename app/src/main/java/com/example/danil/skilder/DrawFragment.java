@@ -42,7 +42,7 @@ public class DrawFragment extends BaseFragment implements Notifier.Subscriber {
     }
 
     @Override
-    public void onNotifyChanged(String message) {
+    public void onNotifyChanged(String message, Bundle data) {
         View view = getView();
         if(view != null  && message != null) {
             DrawView drawView = (DrawView) view.findViewById(R.id.draw_zone);

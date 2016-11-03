@@ -1,28 +1,38 @@
 {
   "project_info": {
-    "project_number": "61571810452",
-    "project_id": "firebase-skilder"
+    "project_number": "584366152381",
+    "project_id": "skilderapplication"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:61571810452:android:12ec756b6a83ccd9",
+        "mobilesdk_app_id": "1:584366152381:android:12ec756b6a83ccd9",
         "android_client_info": {
           "package_name": "com.example.danil.skilder"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "584366152381-q6rvje2mrbvjvtfc60nn38o3v8394ur5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.danil.skilder",
+            "certificate_hash": "27C22DB1BBE60A3F933F006E2438D3813F8BFF9B"
+          }
+        },
+        {
+          "client_id": "584366152381-qegjmtr1kqlt3hpdb4h63mdi3b2ji07t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyB5JSmiy11feDDEDpRykx0paGd-t6s54eQ"
+          "current_key": "AIzaSyChkbg4gE1lqUN905_7P4ulsi3mAz2a8Xw"
         }
       ],
       "services": {
         "analytics_service": {
-          "status": 2,
-          "analytics_property": {
-            "tracking_id": "UA-86561231-1"
-          }
+          "status": 1
         },
         "appinvite_service": {
           "status": 1,
