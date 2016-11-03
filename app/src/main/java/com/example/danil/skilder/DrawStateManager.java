@@ -49,7 +49,7 @@ DrawStateManager {
         return bitmaps.get(currentScreen);
     }
     public void setCurrentScreen(Bitmap bitmap){
-        bitmaps.set(currentScreen, bitmap);
+        bitmaps.set(currentScreen, getResizedBitmap(bitmap,width,height));
         Notifier.getInstance().publish(MESSAGE_CHANGE_SCREEN);
     }
     public void setDimensions(int width, int height){
@@ -72,5 +72,18 @@ DrawStateManager {
                     true);
             bitmaps.set(i, rotatedBitmap);
         }
+    }
+    public Bitmap getResizedBitmap(Bitmap bmp ,int newWidth, int newHeight) {
+        int width = bmp.getWidth();
+        int height = bmp.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bmp, 0, 0, width, height, matrix, false);
+        bmp.recycle();
+        return resizedBitmap;
     }
 }
