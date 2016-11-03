@@ -36,12 +36,14 @@ import java.util.UUID;
 public class MainActivity extends AppCompatActivity implements Notifier.Subscriber {
 
 
+    private String lastSharedFile ;
     private String subscriberId;
     private static String TAG = "MainActivity";
     private static String[] SUBSCRIPTIONS ={
             ChooseToolFragment.MESSAGE_TOOL_CHOOSED,
             FileHelper.MESSAGE_SAVE_SUCCESS,
             FileHelper.MESSAGE_SAVE_FAIL,
+            FileHelper.MESSAGE_TMP_CREATED
     };
 
     @Override
@@ -108,15 +110,7 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
                             new ChooseToolFragment()
                     ).addToBackStack("ChooseTool").commit();
         } else if(itemId == R.id.action_share) { //add share fragment on toolbar click
-//            getSupportFragmentManager().
-//                    beginTransaction().
-//                    replace(
-//                            R.id.fragment_container,
-//                            new ShareFragment()
-//                    ).addToBackStack("Share").commit();
-//                    Toolbar toolbarBottom = (Toolbar)findViewById(R.id.toolbar_bottom);
-//                    toolbarBottom.setVisibility(View.GONE);
-            share();
+                FileHelper.getInstance().prepareToShare();
         }
         if (itemId == R.id.action_save) {
             onSaveButton();
@@ -142,66 +136,16 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
                     Log.e("getFromGallery", e.getMessage());
                 }
             } else if (requestCode == SHARE_PICTURE){
-                File file = new File (localAbsoluteFilePath);
-                file.delete();
+                FileHelper.getInstance().delete(lastSharedFile);
             }
         } else if( resultCode == RESULT_CANCELED){
-                File file = new File (localAbsoluteFilePath);
-                file.delete();
-        }
-    }
-
-    private String localAbsoluteFilePath;
-    private void share(){
-
-        localAbsoluteFilePath = saveImageLocally(DrawStateManager.getInstance().getCurrentScreen());
-
-        if (localAbsoluteFilePath!=null && localAbsoluteFilePath!="") {
-
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            Uri phototUri = Uri.parse("file://" + localAbsoluteFilePath);
-
-            File file = new File(phototUri.getPath());
-
-            Log.d(TAG, "file path: " +file.getPath());
-
-            if(file.exists()) {
-                // file create success
-
-            } else {
-                // file create fail
+            if (requestCode == SHARE_PICTURE) {
+                FileHelper.getInstance().delete(lastSharedFile);
             }
-            //shareIntent.setData(phototUri);
-            shareIntent.setType("image/png");
-            shareIntent.putExtra(Intent.EXTRA_STREAM, phototUri);
-            this.startActivityForResult(Intent.createChooser(shareIntent, "Share Via"), RESULT_OK);
         }
-    }
-/* SAVE IMAGE FUNCTION */
-
-    private String saveImageLocally(Bitmap _bitmap) {
-
-        File outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File outputFile = null;
-        try {
-            outputFile = File.createTempFile("tmp" + UUID.randomUUID().toString(), ".png", outputDir);
-        } catch (IOException e1) {
-            // handle exception
-        }
-
-        try {
-            FileOutputStream out = new FileOutputStream(outputFile);
-            _bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
-            out.close();
-
-        } catch (Exception e) {
-            // handle exception
-        }
-
-        return outputFile.getAbsolutePath();
     }
     @Override
-    public void onNotifyChanged(String message) {
+    public void onNotifyChanged(String message, Bundle data) {
         if(message == null ){
             Log.d(TAG,"Recieved null message");
         } else if( message.equals(ChooseToolFragment.MESSAGE_TOOL_CHOOSED)){
@@ -211,7 +155,18 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
             Toast.makeText(MainActivity.this, R.string.save_success, Toast.LENGTH_SHORT).show();
         } else if( message.equals(FileHelper.MESSAGE_SAVE_FAIL)){
             Toast.makeText(MainActivity.this, R.string.save_fail, Toast.LENGTH_SHORT).show();
-        } else{
+        }else if(message.equals(FileHelper.MESSAGE_TMP_CREATED)) {
+            if(data != null && data.containsKey("path")){
+                lastSharedFile = data.getString("path");
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                Uri photoUri = Uri.parse("file://" + lastSharedFile);
+                shareIntent.setType("image/png");
+                shareIntent.putExtra(Intent.EXTRA_STREAM, photoUri);
+                this.startActivityForResult(Intent.createChooser(shareIntent, "Share Via"), RESULT_OK);
+            } else {
+                Log.d(TAG, "Invalid format of data in message: " + FileHelper.MESSAGE_TMP_CREATED);
+            }
+        }else{
             Log.d(TAG,"Unexpected message: " + message);
         }
     }

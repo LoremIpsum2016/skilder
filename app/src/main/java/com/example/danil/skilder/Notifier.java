@@ -1,5 +1,7 @@
 package com.example.danil.skilder;
 
+import android.os.Bundle;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,7 +17,7 @@ public class Notifier {
     private Map<String,SubscriberInfo>  subscribersInfo   = new HashMap<>();
 
     public interface Subscriber{
-        void onNotifyChanged(String message);
+        void onNotifyChanged(String message, Bundle data);
         void setSubscriberId(String id);
     }
     private class SubscriberInfo{
@@ -32,16 +34,16 @@ public class Notifier {
         public boolean hasSubscription(String subscription){
             return subscription.contains(subscription);
         }
-        public void notifySubscriber(final String message){
+        public void notifySubscriber(final String message, final Bundle data){
             if(uiRun){
                 Ui.run(new Runnable() {
                     @Override
                     public void run() {
-                        subscriber.onNotifyChanged(message);
+                        subscriber.onNotifyChanged(message, data);
                     }
                 });
             } else {
-                subscriber.onNotifyChanged(message);
+                subscriber.onNotifyChanged(message, data);
             }
         }
 
@@ -68,16 +70,20 @@ public class Notifier {
     public void unsubscribe(String id){
         subscribersInfo.remove(id);
     }
-    private void notifySubscribers(String message){
+    private void notifySubscribers(String message, Bundle data){
         for(Map.Entry<String,SubscriberInfo> entry : subscribersInfo.entrySet()){
             SubscriberInfo info = entry.getValue();
             if(info.hasSubscription(message)){
-                info.notifySubscriber(message);
+                info.notifySubscriber(message, data);
             }
         }
     }
-    public void publish(String message){
-        notifySubscribers(message);
+    public void publish(String message, Bundle data){
+        notifySubscribers(message, data);
     }
+    public void publish(String message){
+        notifySubscribers(message,null);
+    }
+
 
 }
