@@ -9,7 +9,8 @@ import android.view.ViewGroup;
 
 public class DrawFragment extends BaseFragment implements Notifier.Subscriber {
 
-    private  String subscriberId;
+    private String subscriberId;
+
     public DrawFragment() {
     }
 
@@ -20,21 +21,22 @@ public class DrawFragment extends BaseFragment implements Notifier.Subscriber {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState){
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        String[] subscriptions =  {DrawTool.MESSAGE_TOOL_CHANGED, DrawStateManager.MESSAGE_CHANGE_SCREEN};
+        String[] subscriptions = {DrawTool.MESSAGE_TOOL_CHANGED, DrawStateManager.MESSAGE_CHANGE_SCREEN};
         Notifier.getInstance().subscribe(this, subscriptions);
         initializeFragment();
     }
+
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         Notifier.getInstance().unsubscribe(subscriberId);
     }
 
-    private void initializeFragment(){
+    private void initializeFragment() {
         View view = getView();
-        if(view != null) {
+        if (view != null) {
             DrawView drawView = (DrawView) view.findViewById(R.id.draw_zone);
             drawView.setTool(DrawTool.getInstance());
             drawView.setBitmap(DrawStateManager.getInstance().getCurrentScreen());
@@ -44,7 +46,7 @@ public class DrawFragment extends BaseFragment implements Notifier.Subscriber {
     @Override
     public void onNotifyChanged(String message, Bundle data) {
         View view = getView();
-        if(view != null  && message != null) {
+        if (view != null && message != null) {
             DrawView drawView = (DrawView) view.findViewById(R.id.draw_zone);
             switch (message) {
                 case DrawTool.MESSAGE_TOOL_CHANGED:

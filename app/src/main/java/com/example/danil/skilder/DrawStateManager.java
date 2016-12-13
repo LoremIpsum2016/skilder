@@ -14,14 +14,14 @@ import java.util.List;
  */
 public class
 DrawStateManager {
-    private static DrawStateManager ourInstance           = new DrawStateManager();
-    private final static String     TAG                   = "DrawStateManager";
-    private List<Bitmap>            bitmaps               = new ArrayList<>();
-    private int                     currentScreen         = 0;
-    private int                     width                 = 0;
-    private int                     height                = 0;
-    private int                     angle                 = -90;
-    public final static String      MESSAGE_CHANGE_SCREEN = "MESSAGE_CHANGE_SCREEN";
+    private static DrawStateManager ourInstance = new DrawStateManager();
+    private final static String TAG = "DrawStateManager";
+    private List<Bitmap> bitmaps = new ArrayList<>();
+    private int currentScreen = 0;
+    private int width = 0;
+    private int height = 0;
+    private int angle = -90;
+    public final static String MESSAGE_CHANGE_SCREEN = "MESSAGE_CHANGE_SCREEN";
 
     public static DrawStateManager getInstance() {
         return ourInstance;
@@ -30,38 +30,42 @@ DrawStateManager {
     private DrawStateManager() {
 
     }
-    public void newBitmap(){
+
+    public void newBitmap() {
         try {
             Log.d(TAG, "Create new bitmap");
             Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             bitmap.eraseColor(Color.WHITE);
             bitmaps.add(bitmap);
-        } catch(Exception e){
+        } catch (Exception e) {
             Log.d(TAG, "Some error on creating bitmap: ", e.getCause());
         }
     }
 
-    public Bitmap getCurrentScreen(){
-        if(bitmaps.isEmpty()){
+    public Bitmap getCurrentScreen() {
+        if (bitmaps.isEmpty()) {
             newBitmap();
         }
-        Log.d(TAG ,"Get current screen");
+        Log.d(TAG, "Get current screen");
         return bitmaps.get(currentScreen);
     }
-    public void setCurrentScreen(Bitmap bitmap){
-        bitmaps.set(currentScreen, getResizedBitmap(bitmap,width,height));
+
+    public void setCurrentScreen(Bitmap bitmap) {
+        bitmaps.set(currentScreen, getResizedBitmap(bitmap, width, height));
         Notifier.getInstance().publish(MESSAGE_CHANGE_SCREEN);
     }
-    public void setDimensions(int width, int height){
+
+    public void setDimensions(int width, int height) {
         this.width = width;
         this.height = height;
     }
-    public void rotate(){
+
+    public void rotate() {
 
         angle *= -1;
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);
-        for (int i=0; i< bitmaps.size(); i++) {
+        for (int i = 0; i < bitmaps.size(); i++) {
             Bitmap oldBitmap = bitmaps.get(i);
             Bitmap rotatedBitmap = Bitmap.createBitmap(oldBitmap,
                     0,
@@ -73,7 +77,8 @@ DrawStateManager {
             bitmaps.set(i, rotatedBitmap);
         }
     }
-    public Bitmap getResizedBitmap(Bitmap bmp ,int newWidth, int newHeight) {
+
+    public Bitmap getResizedBitmap(Bitmap bmp, int newWidth, int newHeight) {
         int width = bmp.getWidth();
         int height = bmp.getHeight();
         float scaleWidth = ((float) newWidth) / width;

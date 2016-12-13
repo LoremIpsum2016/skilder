@@ -11,7 +11,7 @@ import android.widget.SeekBar;
 
 public class ChooseToolFragment extends BaseFragment {
 
-    public final static String MESSAGE_TOOL_CHOOSED ="MESSAGE_TOOL_CHOOSED";
+    public final static String MESSAGE_TOOL_CHOOSED = "MESSAGE_TOOL_CHOOSED";
 
     public ChooseToolFragment() {
     }
@@ -31,9 +31,9 @@ public class ChooseToolFragment extends BaseFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        SeekBar redBar   = (SeekBar) getView().findViewById(R.id.red);
+        SeekBar redBar = (SeekBar) getView().findViewById(R.id.red);
         SeekBar greenBar = (SeekBar) getView().findViewById(R.id.green);
-        SeekBar blueBar  = (SeekBar) getView().findViewById(R.id.blue);
+        SeekBar blueBar = (SeekBar) getView().findViewById(R.id.blue);
         SeekBar widthBar = (SeekBar) getView().findViewById(R.id.width);
 
         redBar.setMax(DrawTool.MAX_COLOR_VALUE);
@@ -61,22 +61,27 @@ public class ChooseToolFragment extends BaseFragment {
             }
         });
     }
+
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         Notifier.getInstance().publish(MESSAGE_TOOL_CHOOSED);
     }
 
-    private SeekBar.OnSeekBarChangeListener getListener(final DrawTool.AllowedParams param){
+    private SeekBar.OnSeekBarChangeListener getListener(final DrawTool.AllowedParams param) {
         return new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 DrawTool.getInstance().setParam(param, progress);
             }
+
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         };
     }
 
