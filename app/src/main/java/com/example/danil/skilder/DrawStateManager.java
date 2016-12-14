@@ -28,7 +28,6 @@ DrawStateManager {
     }
 
     private DrawStateManager() {
-
     }
 
     public void newBitmap() {

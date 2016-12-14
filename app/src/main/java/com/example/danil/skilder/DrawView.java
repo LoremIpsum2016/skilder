@@ -13,52 +13,69 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by danil on 16.10.16.
  */
-class DrawView extends View{
+class DrawView extends View {
 
     private final Paint paint = new Paint();
     private Bitmap bitmap;
-    Canvas utilityCanvas;
+    private Bitmap storedBitmap;
+    private Canvas utilityCanvas;
     private float lastTouchX;
     private float lastTouchY;
     private final RectF dirtyRect = new RectF();
+    private final List<Path> paths = new ArrayList<>();
+    private final List<Path> undonePaths = new ArrayList<>();
     private Path path = new Path();
+
     {
         paint.setColor(Color.GREEN);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(18);
     }
+
     public DrawView(Context context) {
         super(context);
     }
+
     public DrawView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
     }
-    public void setMainColor(int color){
+
+    public void setMainColor(int color) {
         paint.setColor(color);
     }
-    public void setMainColor(int a, int r, int g, int b){
-        paint.setColor( Color.argb(a,r,g,b));
+
+    public void setMainColor(int a, int r, int g, int b) {
+        paint.setColor(Color.argb(a, r, g, b));
     }
-    public void setLineSize(float size){
+
+    public void setLineSize(float size) {
         paint.setStrokeWidth(size);
     }
-    public void setTool(AbstractDrawTool tool){
+
+    public void setTool(AbstractDrawTool tool) {
         paint.setColor(tool.getColor());
         paint.setStrokeWidth(tool.getWidth());
     }
 
     @Override
-    protected void onDraw(Canvas canvas){
+    protected void onDraw(Canvas canvas) {
         try {
             utilityCanvas.drawPath(path, paint);
+            for (Path path_ : paths) {
+                utilityCanvas.drawPath(path_, paint);
+            }
             canvas.drawBitmap(bitmap, 0, 0, paint);
-        }catch (Exception e){
-            Log.d(this.getTag().toString(),"Error in onDraw:",e.getCause());
+        } catch (Exception e) {
+            Log.d(this.getTag().toString(), "Error in onDraw:", e.getCause());
         }
     }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
@@ -67,32 +84,56 @@ class DrawView extends View{
             //                path.moveTo(x, y);
             //               break;
             case MotionEvent.ACTION_DOWN:
-                path.moveTo(x, y);
+                //path.moveTo(x, y);
+                touchStart(x, y);
+                break;
             case MotionEvent.ACTION_MOVE:
                 //path.lineTo(x,y);
-                resetDirtyRect(x, y);
-                int historySize = event.getHistorySize();
-                for (int i = 0; i < historySize; i++) {
-                    float historicalX = event.getHistoricalX(i);
-                    float historicalY = event.getHistoricalY(i);
-                    expandDirtyRect(historicalX, historicalY);
-                    path.lineTo(historicalX, historicalY);
-                }
-                path.lineTo(x, y);
+                touchMove(event);
                 break;
             case MotionEvent.ACTION_UP:
+                touchEnd();
                 break;
         }
         invalidate(
                 (int) (dirtyRect.left - halfStrokeWidth()),
                 (int) (dirtyRect.top - halfStrokeWidth()),
                 (int) (dirtyRect.right + halfStrokeWidth()),
-                (int) (dirtyRect.bottom + halfStrokeWidth()));
+                (int) (dirtyRect.bottom + halfStrokeWidth())
+        );
 
         lastTouchX = x;
         lastTouchY = y;
         return true;
     }
+
+    private void touchStart(float touchX, float touchY) {
+        undonePaths.clear();
+        path.reset();
+        path.moveTo(touchX, touchY);
+    }
+
+    private void touchMove(MotionEvent event) {
+        float x = event.getX();
+        float y = event.getY();
+        resetDirtyRect(x, y);
+        int historySize = event.getHistorySize();
+        for (int i = 0; i < historySize; i++) {
+            float historicalX = event.getHistoricalX(i);
+            float historicalY = event.getHistoricalY(i);
+            expandDirtyRect(historicalX, historicalY);
+            path.lineTo(historicalX, historicalY);
+        }
+        path.lineTo(x, y);
+    }
+
+    private void touchEnd() {
+//        drawPath.lineTo(mX, mY);
+//        drawCanvas.drawPath(drawPath, drawPaint);
+        paths.add(path);
+        path = new Path();
+    }
+
     private void expandDirtyRect(float historicalX, float historicalY) {
         if (historicalX < dirtyRect.left) {
             dirtyRect.left = historicalX;
@@ -105,7 +146,8 @@ class DrawView extends View{
             dirtyRect.bottom = historicalY;
         }
     }
-    private float halfStrokeWidth(){
+
+    private float halfStrokeWidth() {
         return paint.getStrokeWidth() / 2;
     }
 
@@ -122,10 +164,38 @@ class DrawView extends View{
         dirtyRect.bottom = Math.max(lastTouchY, eventY);
     }
 
-
-    public void setBitmap(Bitmap bitmap){
-        path.reset();
-        this.bitmap = bitmap;
+    private void updateBitmap(){
+        bitmap = Bitmap.createBitmap(storedBitmap);
         utilityCanvas = new Canvas(bitmap);
     }
+
+    public void undo() {
+        if (paths.size() > 0) {
+            undonePaths.add(paths.remove(paths.size() - 1));
+            updateBitmap();
+            invalidate();
+        }
+
+    }
+
+    public void redo() {
+        if (undonePaths.size() > 0) {
+            paths.add(undonePaths.remove(undonePaths.size() - 1));
+            updateBitmap();
+            invalidate();
+        }
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        path.reset();
+        paths.clear();
+        this.bitmap = bitmap;
+        this.storedBitmap = Bitmap.createBitmap(bitmap);
+        utilityCanvas = new Canvas(bitmap);
+    }
+
+    public Bitmap getBitmap(){
+        return bitmap;
+    }
+
 }
