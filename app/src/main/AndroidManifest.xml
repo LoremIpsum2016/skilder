@@ -20,16 +20,10 @@
         </activity>
 
         <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"
-        />
-        <meta-data
             android:name="io.fabric.ApiKey"
             android:value="a9b3d8d0040e316727c8259fcde13d5d2cd7ca9c"
         />
-        <provider android:authorities="com.facebook.app.FacebookContentProvider801951719946172"
-                  android:name="com.facebook.FacebookContentProvider"
-                  android:exported="true"/>
+
     </application>
 
 </manifest>

@@ -11,7 +11,7 @@ public class DrawFragment extends BaseFragment implements Notifier.Subscriber {
 
     private String subscriberId;
     private static final String[] SUBSCRIPTIONS = {
-            DrawTool.MESSAGE_TOOL_CHANGED,
+            ChooseToolFragment.MESSAGE_TOOL_CHOOSED,
             DrawStateManager.MESSAGE_CHANGE_SCREEN,
             MainActivity.MESSAGE_CLICK_REDO,
             MainActivity.MESSAGE_CLICK_UNDO
@@ -45,8 +45,8 @@ public class DrawFragment extends BaseFragment implements Notifier.Subscriber {
         Notifier.getInstance().unsubscribe(subscriberId);
     }
     @Override
-    public void onStop(){
-        super.onStop();
+    public void onPause(){
+        super.onPause();
         DrawStateManager.getInstance().setCurrentScreen(
                 drawView.getBitmap()
         );
@@ -55,7 +55,7 @@ public class DrawFragment extends BaseFragment implements Notifier.Subscriber {
     private void initializeFragment() {
         View view = getView();
         if (view != null) {
-            DrawView drawView = (DrawView) view.findViewById(R.id.draw_zone);
+            drawView = (DrawView) view.findViewById(R.id.draw_zone);
             drawView.setTool(DrawTool.getInstance());
             drawView.setBitmap(DrawStateManager.getInstance().getCurrentScreen());
         }
@@ -65,9 +65,9 @@ public class DrawFragment extends BaseFragment implements Notifier.Subscriber {
     public void onNotifyChanged(String message, Bundle data) {
         View view = getView();
         if (view != null && message != null) {
-            drawView = (DrawView) view.findViewById(R.id.draw_zone);//TODO android annotations
+            //drawView = (DrawView) view.findViewById(R.id.draw_zone);//TODO android annotations
             switch (message) {
-                case DrawTool.MESSAGE_TOOL_CHANGED:
+                case ChooseToolFragment.MESSAGE_TOOL_CHOOSED:
                     drawView.setTool(DrawTool.getInstance());
                     break;
                 case DrawStateManager.MESSAGE_CHANGE_SCREEN:

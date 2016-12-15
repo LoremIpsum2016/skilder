@@ -19,8 +19,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
+
 
 import io.fabric.sdk.android.Fabric;
 
@@ -40,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
             FileHelper.MESSAGE_SAVE_FAIL,
             FileHelper.MESSAGE_TMP_CREATED
     };
+    Toolbar toolbarBottom;
 
     public static final String MESSAGE_CLICK_UNDO = "MESSAGE_CLICK_UNDO";
     public static final String MESSAGE_CLICK_REDO = "MESSAGE_CLICK_REDO";
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(R.id.fragment_container, new DrawFragment());
         transaction.commit();
-        Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
+        toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
         toolbarBottom.inflateMenu(R.menu.menu);
         toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -79,9 +79,6 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
                 return false;
             }
         });
-
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(this);
 
     }
 
@@ -105,6 +102,8 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
                             R.id.fragment_container,
                             new ChooseToolFragment()
                     ).addToBackStack("ChooseTool").commit();
+            toolbarBottom.setVisibility(View.GONE);
+
         } else if (itemId == R.id.action_share) { //add share fragment on toolbar click
             FileHelper.getInstance().prepareToShare();
         } else if (itemId == R.id.action_save) {
@@ -158,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
         if (message == null) {
             Log.d(TAG, "Recieved null message");
         } else if (message.equals(ChooseToolFragment.MESSAGE_TOOL_CHOOSED)) {
-            Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
+            toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
             toolbarBottom.setVisibility(View.VISIBLE);
         } else if (message.equals(FileHelper.MESSAGE_SAVE_SUCCESS)) {
             Toast.makeText(MainActivity.this, R.string.save_success, Toast.LENGTH_SHORT).show();

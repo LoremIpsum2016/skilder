@@ -5,5 +5,5 @@ package com.example.danil.skilder;
  */
 public interface AbstractDrawTool {
    int getColor();
-   int getWidth();
+   float getWidth();
 }
