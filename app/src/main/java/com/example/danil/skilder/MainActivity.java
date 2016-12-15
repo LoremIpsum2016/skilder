@@ -1,6 +1,9 @@
 package com.example.danil.skilder;
 
 
+import android.app.Dialog;
+import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -8,8 +11,10 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -37,7 +42,9 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
             ChooseToolFragment.MESSAGE_TOOL_CHOOSED,
             FileHelper.MESSAGE_SAVE_SUCCESS,
             FileHelper.MESSAGE_SAVE_FAIL,
-            FileHelper.MESSAGE_TMP_CREATED
+            FileHelper.MESSAGE_TMP_CREATED,
+            ChooseBackgroundSourceFragment.MESSAGE_FROM_CAMERA,
+            ChooseBackgroundSourceFragment.MESSAGE_FROM_MEMORY
     };
     Toolbar toolbarBottom;
 
@@ -109,11 +116,7 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
         } else if (itemId == R.id.action_save) {
             onSaveButton();
         } else if (itemId == R.id.action_gallery) {
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(intent,
-                    "Select Picture"), REQUEST_SELECT_PICTURE);
+            showDialog();
         } else if (itemId == R.id.action_camera) {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -152,6 +155,13 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
         }
     }
 
+    private void showDialog() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        DialogFragment newFragment = ChooseBackgroundSourceFragment.newInstance();
+        newFragment.show(transaction, "dialog");
+    }
+
     @Override
     public void onNotifyChanged(String message, Bundle data) {
         if (message == null) {
@@ -174,7 +184,19 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
             } else {
                 Log.d(TAG, "Invalid format of data in message: " + FileHelper.MESSAGE_TMP_CREATED);
             }
-        } else {
+        } else if (message.equals(ChooseBackgroundSourceFragment.MESSAGE_FROM_MEMORY)) {
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent,
+                    "Select Picture"), REQUEST_SELECT_PICTURE);
+        } else if (message.equals(ChooseBackgroundSourceFragment.MESSAGE_FROM_MEMORY) ){
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, REQUEST_CAMERA);
+            }
+        }
+        else{
             Log.d(TAG, "Unexpected message: " + message);
         }
     }

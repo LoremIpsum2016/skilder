@@ -2,9 +2,6 @@
     <string name="app_name">Skilder</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="red_component">Red component</string>
-    <string name="green_component">Green component</string>
-    <string name="blue_component">Blue component</string>
     <string name="brush_width">Brush width</string>
     <string name="action_brush">Choose tool</string>
     <string name="action_save">Save in gallery</string>
@@ -16,8 +13,23 @@
     <string name="opacity">Opacity</string>
     <string name="saturation">Saturation</string>
     <string name="ok">OK</string>
+    <string name="choose_background">Choose background</string>
 
 
     <string name="save_success"> Image successfully saved</string>
     <string name="save_fail"> Ooops! Some error on saving image</string>
+
+
+
+    <string-array name="background_sources">
+        <item>
+            From phone memory
+        </item>
+        <item>
+            From camera
+        </item>
+        <item>
+            One color
+        </item>
+    </string-array>
 </resources>

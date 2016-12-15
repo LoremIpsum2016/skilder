@@ -19,7 +19,7 @@ public class ChooseToolFragment extends BaseFragment {
 
     private ColorPicker picker;
     private SVBar svBar;
-    private OpacityBar opacityBar;
+    //private OpacityBar opacityBar;
     private SeekBar widthBar;
     private Button okButton;
 
@@ -43,12 +43,12 @@ public class ChooseToolFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
         picker = (ColorPicker) getView().findViewById(R.id.picker);
         svBar = (SVBar) getView().findViewById(R.id.svbar);
-        opacityBar = (OpacityBar) getView().findViewById(R.id.opacitybar);
+        //opacityBar = (OpacityBar) getView().findViewById(R.id.opacitybar);
         widthBar = (SeekBar) getView().findViewById(R.id.widthBar);
         okButton = (Button) getView().findViewById(R.id.set_draw_tool);
 
         picker.addSVBar(svBar);
-        picker.addOpacityBar(opacityBar);
+        //picker.addOpacityBar(opacityBar);
 
         widthBar.setMax(DrawTool.MAX_BRUSH_SIZE);
         DrawTool tool = DrawTool.getInstance();

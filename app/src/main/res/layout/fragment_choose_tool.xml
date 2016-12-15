@@ -32,17 +32,6 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:text="@string/opacity"
-            android:layout_gravity="center"
-            android:layout_height="wrap_content" />
-        <com.larswerkman.holocolorpicker.OpacityBar
-            android:id="@+id/opacitybar"
-            android:layout_width="322dp"
-            android:layout_height="112dp"
-            android:layout_gravity="center"
-            android:layout_margin="4dip"/>
-        <TextView
-            android:layout_width="wrap_content"
             android:text="@string/brush_width"
             android:layout_gravity="center"
             android:layout_height="wrap_content" />
@@ -60,7 +49,8 @@
             android:layout_gravity="center"
             android:text="@string/ok"
             android:shadowColor="@color/colorAccent"
-            android:id="@+id/set_draw_tool"/>
+            android:id="@+id/set_draw_tool"
+            android:layout_marginTop="12dip"/>
 
     </LinearLayout>
 
