@@ -14,7 +14,8 @@ public class DrawFragment extends BaseFragment implements Notifier.Subscriber {
             ChooseToolFragment.MESSAGE_TOOL_CHOOSED,
             DrawStateManager.MESSAGE_CHANGE_SCREEN,
             MainActivity.MESSAGE_CLICK_REDO,
-            MainActivity.MESSAGE_CLICK_UNDO
+            MainActivity.MESSAGE_CLICK_UNDO,
+            MainActivity.MESSAGE_CLICK_CLEAR
     };
     private DrawView drawView;
 
@@ -50,6 +51,9 @@ public class DrawFragment extends BaseFragment implements Notifier.Subscriber {
         DrawStateManager.getInstance().setCurrentScreen(
                 drawView.getBitmap()
         );
+//        DrawStateManager.getInstance().setCurrentPaths(
+//                drawView.getPaths()
+//        );
     }
 
     private void initializeFragment() {
@@ -58,6 +62,7 @@ public class DrawFragment extends BaseFragment implements Notifier.Subscriber {
             drawView = (DrawView) view.findViewById(R.id.draw_zone);
             drawView.setTool(DrawTool.getInstance());
             drawView.setBitmap(DrawStateManager.getInstance().getCurrentScreen());
+//            drawView.setPaths(DrawStateManager.getInstance().getCurrentPaths());
         }
     }
 
@@ -65,7 +70,6 @@ public class DrawFragment extends BaseFragment implements Notifier.Subscriber {
     public void onNotifyChanged(String message, Bundle data) {
         View view = getView();
         if (view != null && message != null) {
-            //drawView = (DrawView) view.findViewById(R.id.draw_zone);//TODO android annotations
             switch (message) {
                 case ChooseToolFragment.MESSAGE_TOOL_CHOOSED:
                     drawView.setTool(DrawTool.getInstance());
@@ -78,6 +82,9 @@ public class DrawFragment extends BaseFragment implements Notifier.Subscriber {
                     break;
                 case MainActivity.MESSAGE_CLICK_REDO:
                     drawView.redo();
+                    break;
+                case MainActivity.MESSAGE_CLICK_CLEAR:
+                    drawView.setBitmap(DrawStateManager.getInstance().getStartBitmap() );
                     break;
                 default:
                     Log.d(getLogTag(), "Unexpected message: " + message);

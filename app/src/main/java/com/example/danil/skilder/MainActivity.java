@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
 
     public static final String MESSAGE_CLICK_UNDO = "MESSAGE_CLICK_UNDO";
     public static final String MESSAGE_CLICK_REDO = "MESSAGE_CLICK_REDO";
+    public static final String MESSAGE_CLICK_CLEAR = "MESSAGE_CLICK_CLEAR";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,12 +91,7 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
 
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        DrawStateManager.getInstance().rotate();
-        initActivity();
-    }
+
 
     public void onSaveButton() {
         FileHelper.getInstance().saveCurrentScreen(this);
@@ -117,11 +114,8 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
             onSaveButton();
         } else if (itemId == R.id.action_gallery) {
             showDialog();
-        } else if (itemId == R.id.action_camera) {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(takePictureIntent, REQUEST_CAMERA);
-            }
+        } else if (itemId == R.id.action_clear) {
+            Notifier.getInstance().publish(MESSAGE_CLICK_CLEAR);
         } else if (itemId == R.id.action_undo) {
             Notifier.getInstance().publish(MESSAGE_CLICK_UNDO);
         } else if (itemId == R.id.action_redo) {
@@ -190,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements Notifier.Subscrib
             intent.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(Intent.createChooser(intent,
                     "Select Picture"), REQUEST_SELECT_PICTURE);
-        } else if (message.equals(ChooseBackgroundSourceFragment.MESSAGE_FROM_MEMORY) ){
+        } else if (message.equals(ChooseBackgroundSourceFragment.MESSAGE_FROM_CAMERA) ){
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
                 startActivityForResult(takePictureIntent, REQUEST_CAMERA);

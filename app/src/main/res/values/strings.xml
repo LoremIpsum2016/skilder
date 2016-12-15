@@ -6,7 +6,7 @@
     <string name="action_brush">Choose tool</string>
     <string name="action_save">Save in gallery</string>
     <string name="action_share">Share</string>
-    <string name="action_camera">Camera</string>
+    <string name="action_clear">Clear</string>
     <string name="action_gallery">From gallery</string>
     <string name="action_undo">Undo</string>
     <string name="action_redo">Redo</string>
@@ -27,9 +27,6 @@
         </item>
         <item>
             From camera
-        </item>
-        <item>
-            One color
         </item>
     </string-array>
 </resources>

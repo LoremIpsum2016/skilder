@@ -21,14 +21,14 @@ import java.util.List;
  */
 class DrawView extends View {
 
-    private final Paint paint = new Paint();
+    private Paint paint = new Paint();
     private Bitmap bitmap;
     private Bitmap storedBitmap;
     private Canvas utilityCanvas;
     private float lastTouchX;
     private float lastTouchY;
     private final RectF dirtyRect = new RectF();
-    private final List<Path> paths = new ArrayList<>();
+    private List<Path> paths = new ArrayList<>();
     private final List<Path> undonePaths = new ArrayList<>();
     private Path path = new Path();
 
@@ -81,14 +81,11 @@ class DrawView extends View {
         float x = event.getX();
         float y = event.getY();
         switch (MotionEventCompat.getActionMasked(event)) {
-            //                path.moveTo(x, y);
-            //               break;
+
             case MotionEvent.ACTION_DOWN:
-                //path.moveTo(x, y);
                 touchStart(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
-                //path.lineTo(x,y);
                 touchMove(event);
                 break;
             case MotionEvent.ACTION_UP:
@@ -192,10 +189,26 @@ class DrawView extends View {
         this.bitmap = bitmap;
         this.storedBitmap = Bitmap.createBitmap(bitmap);
         utilityCanvas = new Canvas(bitmap);
+        invalidate();
     }
 
     public Bitmap getBitmap(){
         return bitmap;
+    }
+
+    public void setPaths(List<Path> paths){
+        this.paths = paths;
+    }
+
+    public List<Path> getPaths(){
+        return this.paths;
+    }
+
+    public void clear(){
+        this.bitmap = Bitmap.createBitmap(storedBitmap);
+        this.paths.clear();
+        this.undonePaths.clear();
+        invalidate();
     }
 
 }

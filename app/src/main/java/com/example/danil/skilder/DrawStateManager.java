@@ -3,6 +3,7 @@ package com.example.danil.skilder;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Path;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -17,11 +18,13 @@ DrawStateManager {
     private static DrawStateManager ourInstance = new DrawStateManager();
     private final static String TAG = "DrawStateManager";
     private List<Bitmap> bitmaps = new ArrayList<>();
+    private List<List<Path>> paths = new ArrayList<>();
     private int currentScreen = 0;
     private int width = 0;
     private int height = 0;
-    private int angle = -90;
     public final static String MESSAGE_CHANGE_SCREEN = "MESSAGE_CHANGE_SCREEN";
+    private Bitmap startBitmap;
+
 
     public static DrawStateManager getInstance() {
         return ourInstance;
@@ -36,6 +39,7 @@ DrawStateManager {
             Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             bitmap.eraseColor(Color.WHITE);
             bitmaps.add(bitmap);
+            startBitmap = Bitmap.createBitmap(bitmap);
         } catch (Exception e) {
             Log.d(TAG, "Some error on creating bitmap: ", e.getCause());
         }
@@ -53,28 +57,36 @@ DrawStateManager {
         bitmaps.set(currentScreen, getResizedBitmap(bitmap, width, height));
         Notifier.getInstance().publish(MESSAGE_CHANGE_SCREEN);
     }
+    public void setStartBitmap(Bitmap bitmap){
+        startBitmap =  getResizedBitmap(bitmap, width, height);
+    }
+
+    public Bitmap getStartBitmap(){
+        bitmaps.set(currentScreen, getResizedBitmap(
+                Bitmap.createBitmap(startBitmap),
+                width,
+                height)
+        );
+        return getCurrentScreen();
+    }
 
     public void setDimensions(int width, int height) {
         this.width = width;
         this.height = height;
     }
 
-    public void rotate() {
 
-        angle *= -1;
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        for (int i = 0; i < bitmaps.size(); i++) {
-            Bitmap oldBitmap = bitmaps.get(i);
-            Bitmap rotatedBitmap = Bitmap.createBitmap(oldBitmap,
-                    0,
-                    0,
-                    oldBitmap.getWidth(),
-                    oldBitmap.getHeight(),
-                    matrix,
-                    true);
-            bitmaps.set(i, rotatedBitmap);
+    public List<Path> getCurrentPaths(){
+        if (paths.isEmpty()) {
+            List<Path> newPaths = new ArrayList<>();
+            paths.add(newPaths);
+            return paths.get(0) ;
         }
+        return paths.get(currentScreen);
+    }
+
+    public void setCurrentPaths(List<Path> newPaths){
+        paths.set(currentScreen, newPaths);
     }
 
     public Bitmap getResizedBitmap(Bitmap bmp, int newWidth, int newHeight) {
